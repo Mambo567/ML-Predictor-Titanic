@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultado de la Predicción</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url("/static/titanic.jpg") no-repeat center center fixed;
+            background-size: cover;
+            color: #ffffff; /* Blanco */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        .container {
+            background-color: rgba(30, 39, 46, 0.85); /* Gris oscuro con opacidad */
+            border-radius: 10px;
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #f5c469; /* Dorado */
+            margin-bottom: 20px;
+        }
+
+        .prediction {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .note {
+            font-size: 16px;
+            color: #f5c469; /* Dorado */
+            margin-bottom: 20px;
+        }
+
+        img {
+            width: 100%;
+            max-width: 500px;
+            border: 2px solid #f5c469;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            background-color: transparent;
+            color: #f5c469; /* Dorado */
+            border: 2px solid #f5c469;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        button:hover {
+            background-color: #f5c469; /* Dorado */
+            color: #1e272e; /* Gris oscuro */
+        }
+
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Resultado de la Predicción</h1>
+        <div class="prediction">
+            <p><strong>Predicción:</strong> {{ prediccion }}</p>
+        </div>
+        <p class="note">Nota: 0 = Se chingó, 1 = Sobrevivió</p>
+        <img src="data:image/png;base64,{{ grafica }}" alt="Gráfica de Predicciones">
+        <a href="/"><button>Volver al Inicio</button></a>
+    </div>
+</body>
+</html>
