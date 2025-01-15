@@ -8,6 +8,11 @@ import json
 import matplotlib.pyplot as plt
 from io import BytesIO
 import base64
+from dotenv import load_dotenv
+import os
+import google.generativeai as genai
+from utils import init_db, get_prompt, get_text
+
 
 
 app = Flask(__name__)
@@ -16,31 +21,19 @@ app = Flask(__name__)
 with open("titanic_model.pkl", "rb") as f:
     model = pickle.load(f)
 
+# Aqui definimos variables de entorno
+load_dotenv()
+
 # Definicion de variables de conexion
 # Cadena de conexión a la base de datos PostgreSQL
-churro = "postgresql://postgres:postgres@104.199.93.74/postgres"
+churro = os.environ["churro"]
 engine = create_engine(churro)
+GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"]
 
-# Inicializar la base de datos
-def init_db():
-    # Conectar a la base de datos y crear la tabla 'predictions' si no existe
-    # Completa aquí: conexión SQLite y creación de tabla con campos (inputs, prediction, timestamp)
-    # Crear la tabla 'predictions' con SQL
-    create_table_query = """
-    CREATE TABLE IF NOT EXISTS predictions (
-        pclass INT NOT NULL,
-        sex INT NOT NULL,
-        age INT NOT NULL,
-        prediction INT NOT NULL,
-        timestamp TIMESTAMP NOT NULL
-    );
-    """
-    with engine.connect() as connection:
-        connection.execute(text(create_table_query))
-    print("Tabla 'predictions' creada si no existía.")
+
 
 # Llamar a la función
-init_db()
+init_db(engine)
 
 # Validación
 
@@ -66,7 +59,9 @@ def predict():
         # 2. Realizar predicción con el modelo
         # Completa aquí: usa model.predict()
         prediction = model.predict(input_data)[0]
-
+        mapita = {0 : "No Superviviente", 1 : "Superviviente"}
+        prediction = mapita[prediction]
+        prediction
         # 3. Guardar en la base de datos
         query = '''SELECT * FROM predictions'''
         historial = pd.read_sql(query,con=engine)
@@ -80,7 +75,7 @@ def predict():
         ### Generamos la gráfica
         read_predictions = pd.read_sql(query, con=engine)
         fig = plt.figure()
-        read_predictions.prediction.value_counts().plot(kind="bar")
+        read_predictions.prediction.value_counts().plot(kind="bar",rot=0)
         plt.title("Predicciones totales")
 
         # Guardar la gráfica en un buffer en memoria
@@ -92,8 +87,13 @@ def predict():
         # Codificar la imagen para pasarla por JSON a los resultados
         img_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
 
+        # Generar texto de AI
+        prompt = get_prompt(input_data,prediction)
+        ai_model = genai.GenerativeModel('gemini-2.0-flash-exp')
+        text = get_text(prompt=prompt,model=ai_model)
+
         # Devolver el resultado y la imagen (grafica) como respuesta
-        return render_template("resultado.html", prediccion=prediction, grafica=img_base64)
+        return render_template("resultado.html", prediccion=prediction, grafica=img_base64,text=text)
     except Exception as e:
         return jsonify({"error": str(e)})
 

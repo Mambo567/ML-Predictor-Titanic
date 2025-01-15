@@ -38,12 +38,6 @@
             margin-bottom: 10px;
         }
 
-        .note {
-            font-size: 16px;
-            color: #f5c469; /* Dorado */
-            margin-bottom: 20px;
-        }
-
         img {
             width: 100%;
             max-width: 500px;
@@ -81,7 +75,9 @@
         <div class="prediction">
             <p><strong>Predicción:</strong> {{ prediccion }}</p>
         </div>
-        <p class="note">Nota: 0 = Se chingó, 1 = Sobrevivió</p>
+        <div class="text">
+            <p>{{ text }}</p>
+        </div>
         <img src="data:image/png;base64,{{ grafica }}" alt="Gráfica de Predicciones">
         <a href="/"><button>Volver al Inicio</button></a>
     </div>
